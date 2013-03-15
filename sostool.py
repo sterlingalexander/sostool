@@ -2,7 +2,7 @@
 
 __author__ = 'Sterling Alexander'
 
-import sys, os, imp
+import sys, os, imp, subprocess
 from fnmatch import fnmatch
 
 class Plugins:
@@ -25,8 +25,9 @@ class Plugins:
         for path, subdirs, files in os.walk(pdir):
             for name in files:
                 if fnmatch(name, self.pattern):
+                    fullpath = os.path.join(path, name)
                     # print " --> " + os.path.join(path, name)
-                    plist.append(name)
+                    plist.append(fullpath)
         return plist
 
     def debugPrint(self):
@@ -46,6 +47,7 @@ def main():
     plugins = Plugins()
     for file in plugins.pluginList:
         print "I want to execute " + str(file)
+        subprocess.call(["python", file])
 
     if DEBUG:
         plugins.debugPrint()
