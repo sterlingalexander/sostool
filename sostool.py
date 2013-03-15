@@ -3,7 +3,6 @@
 __author__ = 'Sterling Alexander'
 
 import sys, os, imp
-from imp_get_suffixes import module_types
 from fnmatch import fnmatch
 
 class Plugins:
@@ -26,7 +25,7 @@ class Plugins:
         for path, subdirs, files in os.walk(pdir):
             for name in files:
                 if fnmatch(name, self.pattern):
-                    print " --> " + os.path.join(path, name)
+                    # print " --> " + os.path.join(path, name)
                     plist.append(name)
         return plist
 
@@ -38,18 +37,18 @@ class Plugins:
         print "Current pwd:\t\t" + self.sosPwd
 
 def main():
+
+    if len(sys.argv) > 1:
+        DEBUG = sys.argv[1]
+    else:
+        DEBUG = 0
+
     plugins = Plugins()
+    for file in plugins.pluginList:
+        print "I want to execute " + str(file)
 
-    print 'Package:'
-    f, filename, description = imp.find_module('example')
-    print module_types[description[2]], filename
-    print
-
-    print 'Sub-module:'
-    f, filename, description = imp.find_module('submodule', ['./example'])
-    print module_types[description[2]], filename
-    if f: f.close()
-    plugins.debugPrint()
+    if DEBUG:
+        plugins.debugPrint()
 
 if __name__ == "__main__":
     main()
