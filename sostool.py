@@ -4,6 +4,7 @@ __author__ = 'Sterling Alexander'
 import sys, os, imp, subprocess, ConfigParser
 from fnmatch import fnmatch
 from os.path import expanduser
+from termcolor import colored, cprint
 
 class Plugins:
 
@@ -81,7 +82,8 @@ def main():
     print "Sawce config read"
     plugins = Plugins()
     for file in plugins.pluginList:
-        print "Currently executing plugin: " + ( str(file)).split('/')[-1]
+        print ""
+        cprint("Currently executing plugin: " + ( str(file)).split('/')[-1], 'blue', 'on_grey')
         print ""
         subprocess.call(["python", file])
 
