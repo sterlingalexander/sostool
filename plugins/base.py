@@ -2,28 +2,33 @@
 
 __author__ = 'Sterling Alexander'
 
+import re, ConfigParser
+from termcolor import colored, cprint
+from os.path import expanduser
+
 SPACER = "   "
+LINESPACER = " -- "
 ERROR = " === Error === | "
 
 class baseSos:
 
     def __init__(self):
+        self.files = {}
+        cfgpath = expanduser("~/.sostool_config")
+        cfg = ConfigParser.ConfigParser()
+        cfg.read(cfgpath)
+        for section in cfg.sections():
+            for option in cfg.options(section):
+                line = cfg.get(section,option)
+                line = line.split(',')
+                for entry in line:
+#                   print "option => " + option.strip() + " entry => " + entry.strip()
+                    self.files[option.strip()] = entry.strip()
         self.redhatRelease = "etc/redhat-release"
         self.testfile = "proc/meminfo"
         self.fhostname = "hostname"
         self.fuptime = "uptime"
         self.dmidecode = "dmidecode"
-        self.ERR_LIST = []
-
-    def sosRootCheck(self):
-        # Dirty hack to check if we are in sosroot
-        try:
-            fh = open(self.testfile, "r")
-            return 1
-        except IOError:
-            print "\n\tHrm, this does not appear to be the root of a sosreport..."
-            print "\tI'm baffeled, so I'm quitting..."
-            return 0
 
     def hostname(self):
         try:
@@ -66,8 +71,6 @@ class baseSos:
 
 def main():
     baseReport = baseSos()
-    if baseReport.sosRootCheck() == 0:
-        exit()
     baseReport.hostname()
     baseReport.redHatRelease()
     baseReport.dmiOut()

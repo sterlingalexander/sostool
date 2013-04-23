@@ -17,6 +17,7 @@ class dumpReport:
         self.sysctl = []
         self.memory = []
         self.storage = []
+        self.chkconfig = []
         cfg = ConfigParser.ConfigParser()
         cfg.read(cfgpath)
         for section in cfg.sections():
@@ -29,6 +30,13 @@ class dumpReport:
                     self.files[option.strip()] = entry.strip()
 
     def parseFiles(self):
+        try:
+            for line in open(self.files["chkconfig"]).readlines():
+                print line
+                if "dump" in line:
+                    self.chkconfig.append(line.rstrip())
+        except Exception:
+            self.chkconfig = "===!!! Unable to determine !!!==="
         try:
             self.hostname = open(self.files["hostname"]).readline()
         except Exception:
@@ -45,6 +53,8 @@ class dumpReport:
             for line in open(self.files["installed-rpms"]):
                 if "kexec-tools" in line:
                     self.toolsVersion = line
+            if  not self.toolsVersion:
+                self.toolsVersion = "===!!! kexec-tools package is not installed !!!==="
         except Exception:
             self.toolsVersion = "===!!! Unable to determine !!!==="
         try:
@@ -78,7 +88,13 @@ def main():
     print "\n" +  LINESPACER + "Hostname:\t\t\t" + dump.hostname.rstrip()
     print LINESPACER + "OS Version:\t\t\t" + dump.release.rstrip()
     print LINESPACER + "kexec-tools version:\t" + "  ".join(dump.toolsVersion.split())
-    print LINESPACER + "Cmdline:\t\t\t" + dump.cmdline
+    print LINESPACER + "Cmdline:\t\t\t" + dump.cmdline.rstrip()
+    print LINESPACER + "Service Status:\t\t",
+    for line in dump.chkconfig:
+        print line
+        print "\t\t\t\t",
+
+    print ""
     cprint("=====| Current kdump.conf options |=====", 'yellow', 'on_grey')
     print ""
     if (len(dump.kdumpOptions) == 0):
@@ -104,10 +120,6 @@ def main():
     for line in dump.storage:
         print LINESPACER + line
     print ""
-
-
-    raw_input("Press any key to continue...")
-
 
 if __name__ == "__main__":
     main()
