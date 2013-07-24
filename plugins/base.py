@@ -29,11 +29,12 @@ class baseSos:
         self.fhostname = "hostname"
         self.fuptime = "uptime"
         self.dmidecode = "dmidecode"
+        self.rpms = "installed-rpms"
 
     def hostname(self):
         try:
             fh = open(self.fhostname)
-            print "\nMachine hostname: " + fh.readline()
+            print "Machine hostname: " + fh.readline()
             return 1
         except IOError:
             print ERROR + "File `hostname` not found in sosreport"
@@ -42,10 +43,10 @@ class baseSos:
     def redHatRelease(self):
         try:
             fh = open(self.redhatRelease)
-            print "\nRed Hat release: " + fh.readline()
+            print "Red Hat release: " + fh.readline()
             return 1
         except IOError:
-            print ERROR + "\nFile `etc/redhat-release` not found in sosreport."
+            print ERROR + "File `etc/redhat-release` not found in sosreport."
             print ERROR + "--==:: WARNING ::==--  This may be an unsupported OS install."
             return 0
 

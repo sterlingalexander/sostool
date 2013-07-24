@@ -1,1 +1,3 @@
 Tool written in python for parsing sosreports that is extensible via plugins.
+
+Requires termcolor, which can be installed using pip

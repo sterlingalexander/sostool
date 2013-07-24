@@ -69,6 +69,7 @@ class Sostool():
         baseConfig.set('Files', 'df', 'df')
         baseConfig.set('Files', 'installed-rpms', 'installed-rpms')
         baseConfig.set('Files', 'cmdline', 'proc/cmdline')
+#        baseConfig.set('Flags', '-b -d')
         baseConfig.write(cfg)
         cfg.close()
         print "....Done!"
@@ -104,26 +105,29 @@ def main():
     if not sostool.sosreportRootCheck():
         exit()
 
-    print type(args)
-    print args.base
-    print args.dumpreport
-    print args.verbosity
+    selected = []
+    argdict = vars(args)
+    for key in argdict:
+        print key + "--> ", argdict[key]
+        if argdict[key]:
+            selected.append(key)
 
-#    pluginList = []
-#    for x in args:
-#        pluginList.append(x)
-#    print pluginList
+    print "====================================="
+    print "Plugins to run:  ", selected
+    print "====================================="
 
     print "Sawce config has been read....(feels official, doesn't it?)"
     plugins = Plugins()
 
     for file in plugins.pluginList:
-        print file
-        print ""
-        cprint("Currently executing plugin: " + ( str(file)).split('/')[-1], 'blue', 'on_grey')
-        print ""
-        subprocess.call(["python", file])
-        raw_input("Press any key to continue...")
+#        print str(file).split('/')[-1].split('.')[0]
+        if str(file).split('/')[-1].split('.')[0] in selected:
+            print file
+            print ""
+            cprint("Currently executing plugin: " + ( str(file)).split('/')[-1], 'blue', 'on_grey')
+            print ""
+            subprocess.call(["python", file])
+            raw_input("Press any key to continue...")
 
 # Most likely this is now dead code.
 #    if DEBUG:

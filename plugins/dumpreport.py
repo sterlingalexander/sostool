@@ -32,7 +32,6 @@ class dumpReport:
     def parseFiles(self):
         try:
             for line in open(self.files["chkconfig"]).readlines():
-                print line
                 if "dump" in line:
                     self.chkconfig.append(line.rstrip())
         except Exception:
@@ -90,6 +89,8 @@ def main():
     print LINESPACER + "kexec-tools version:\t" + "  ".join(dump.toolsVersion.split())
     print LINESPACER + "Cmdline:\t\t\t" + dump.cmdline.rstrip()
     print LINESPACER + "Service Status:\t\t",
+    #print dump.chkconfig
+    #print type(dump.chkconfig)
     for line in dump.chkconfig:
         print line
         print "\t\t\t\t",
