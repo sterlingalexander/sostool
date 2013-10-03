@@ -31,54 +31,56 @@ class dumpReport:
 
     def parseFiles(self):
         try:
+            self.release = open(self.files["redhat-release"]).readline()
+        except Exception:
+            self.release = "===!!! Missing /etc/redhat-release !!!==="
+        try:
             for line in open(self.files["chkconfig"]).readlines():
                 if "dump" in line:
                     self.chkconfig.append(line.rstrip())
         except Exception:
-            self.chkconfig = "===!!! Unable to determine !!!==="
+            self.chkconfig = "===!!! Missing `chkconfig` output !!!==="
         try:
             self.hostname = open(self.files["hostname"]).readline()
         except Exception:
-            self.hostname = "===!!! Unable to determine !!!==="
-        try:
-            self.release = open(self.files["redhat-release"]).readline()
-        except Exception:
-            self.release = "===!!! Unable to determine !!!==="
+            self.hostname = "===!!! Missing `hostname` output !!!==="
         try:
             self.cmdline = open(self.files["cmdline"]).readline()
         except Exception:
-            self.cmdline = "===!!! Unable to determine !!!==="
+            self.cmdline = "===!!! Missing `cmdline` output !!!==="
         try:
             for line in open(self.files["installed-rpms"]):
+                self.foundTools = 0
                 if "kexec-tools" in line:
                     self.toolsVersion = line
-            if  not self.toolsVersion:
+                    self.foundTools = 1
+            if not self.foundTools:
                 self.toolsVersion = "===!!! kexec-tools package is not installed !!!==="
         except Exception:
-            self.toolsVersion = "===!!! Unable to determine !!!==="
+            self.toolsVersion = "===!!! Missing list of installed rpm's !!!==="
         try:
             for line in open(self.files['kdump']):
                 if line[0] != '#' and line[0] != '\n':
                     self.kdumpOptions.append(line.rstrip('\n'))
         except Exception:
-            self.kdumpOptions.append("===!!! Unable to determine !!!===")
+            self.kdumpOptions.append("===!!! Missing `/etc/kdump.conf configuration file !!!===")
         try:
             for line in open(self.files['sysctl']):
                 if 'panic' in line or 'sysrq' in line:
                     self.sysctl.append(line.rstrip('\n'))
         except Exception:
-            self.sysctl.append("===!!! Unable to determine !!!===")
+            self.sysctl.append("===!!! Missing `sysctl -a` output !!!===")
 
         try:
             for line in open(self.files["free"]).readlines():
                 self.memory.append(line.rstrip('\n'))
         except Exception:
-            self.memory.append("===!!! Unable to determine !!!===")
+            self.memory.append("===!!! Missing `free` output !!!===")
         try:
             for line in open(self.files["df"]).readlines():
                 self.storage.append(line.rstrip('\n'))
         except Exception:
-            self.storage.append("===!!! Unable to determine !!!===")
+            self.storage.append("===!!! Missing `df` output !!!===")
 
 def main():
     cprint("====================| kernel capture report |====================", 'yellow', 'on_grey')
@@ -91,9 +93,12 @@ def main():
     print LINESPACER + "Service Status:\t\t",
     #print dump.chkconfig
     #print type(dump.chkconfig)
-    for line in dump.chkconfig:
-        print line
-        print "\t\t\t\t",
+    if len(dump.chkconfig):
+        for line in dump.chkconfig:
+            print line
+            print "\t\t\t\t",
+    else:
+        print "  ".join(dump.toolsVersion.split())
 
     print ""
     cprint("=====| Current kdump.conf options |=====", 'yellow', 'on_grey')
